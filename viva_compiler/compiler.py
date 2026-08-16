@@ -73,16 +73,23 @@ def signature_of(core, draft_name: str) -> Signature:
 # ── type compatibility (pluggable) ────────────────────────────────────────────
 def default_type_compatible(core, sig_t, handler_t) -> bool:
     """A handler port type conforms to a signature port type if they are equal or
-    the handler type inherits the signature type (a subtype). Workspaces can pass a
-    wider hook (e.g. ontology-aware) via ``type_compatible=``."""
+    the handler type declares the signature type as a parent (``_inherit``).
+    Workspaces can pass a wider hook (e.g. ontology-aware) via ``type_compatible=``.
+
+    Single-level ``_inherit`` is deliberate: bigraph-schema does not support
+    multi-level inheritance chains off a primitive (registering ``a <: b <: float``
+    raises in ``resolve``), so walking the chain would add complexity for an
+    unreachable case. ``core.access`` may return a dict schema (custom types) or a
+    dataclass (primitives); both are read defensively."""
     if sig_t == handler_t:
         return True
     try:
-        schema = core.access(handler_t) or {}
-        inherit = schema.get("_inherit")
-        return inherit == sig_t or sig_t in (inherit or [])
+        schema = core.access(handler_t)
     except Exception:
         return False
+    inherit = schema.get("_inherit") if isinstance(schema, dict) else getattr(schema, "_inherit", None)
+    parents = [inherit] if isinstance(inherit, str) else list(inherit or [])
+    return sig_t in parents
 
 
 # ── conformance: the H ⊢ S judgment ───────────────────────────────────────────
