@@ -20,8 +20,13 @@ Table 1's `R_L`) as a first-class, conformance-checked operation.
 
 ## Install
 
+Not on PyPI; install from a clone (depends on `process-bigraph>=1.8` and
+`bigraph-schema>=0.0.60`):
+
 ```bash
-pip install viva-compiler        # or: uv pip install viva-compiler
+git clone https://github.com/vivarium-collective/viva-compiler
+cd viva-compiler
+uv pip install -e ".[dev]"       # [dev] adds pytest
 ```
 
 ## Use
@@ -94,4 +99,11 @@ Some figures (division, development, evolution) are not static handler swaps but
 This is the **binding** stage of a compiler — conformance-checked handler
 installation — not the whole pipeline. It does not *generate* handlers or elaborate
 a higher-level description into a network; those are separate concerns a caller
-supplies. That narrowness is what keeps it small (~250 lines) and general.
+supplies. That narrowness is what keeps it small (~450 lines across the package)
+and general.
+
+## Links
+
+- Repository: https://github.com/vivarium-collective/viva-compiler
+- process-bigraph: https://github.com/vivarium-collective/process-bigraph
+- bigraph-schema: https://github.com/vivarium-collective/bigraph-schema
